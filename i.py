@@ -13,7 +13,6 @@ def separate_elements(string):
     for element in string:
         if element in ' ':
             continue
-        
         if element in '0123456789':
             number+=element
             
