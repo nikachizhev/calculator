@@ -1,59 +1,70 @@
 #создаем словарь с операциями где указываем их приоретет
-oper={'+':(1,lambda x,y:x+y),'-':(1,lambda x,y:x-y),'*':(2,lambda x,y:x*y),'/':(2,lambda x,y:x/y)}
-stroka=input()
+operations={'+':(1, lambda x, y: x + y),
+            '-':(1, lambda x, y: x - y),
+            '*':(2, lambda x, y: x * y),
+            '/':(2, lambda x, y: x / y)}
+string=input()
+
+
 #чтобы не прочитать 90 как 9 и 0 создаем функцию которая отделяет числа от операций и скобок
-def f(stroka):
+def separate_elements(string):
     simbols=[]
     number=''
-    for i in stroka:
+    for element in string:
+        if element in ' ':
+            continue
         
-        if i in '0123456789':
-            number+=i
+        if element in '0123456789':
+            number+=element
             
         elif number: #если i это не число добавляем number в наш массив и сбрасываем для будущих новых чисел
             simbols.append(number)
             number=''
-        if i in oper or i in '()':
-            simbols.append(i)
-    simbols.append(number) #добавляем последнее собранное число
+        if element in operations or element in '()':
+            simbols.append(element)
+    if number:
+        simbols.append(number) #добавляем последнее собранное число
     return simbols
 
 stack=[] #будем сохранять сюда операции и скобки
-outpt=[] #сюда сохраняем числа и операции, если их не добавить в стек 
-simbol=f(stroka) 
+out_put=[] #сюда сохраняем числа и операции, если их не добавить в стек
+simbol_list= separate_elements(string)
 
 #проходим по полученному ранее массиву 
-for i in simbol:
-    if i in oper: #если наш элемент это операция, пока существует стек и текущая операция
+for element in simbol_list:
+    if element in operations: #если наш элемент это операция, пока существует стек и текущая операция
         #имеет приоретет <= последенему эл-ту из стека удаляем из стека последний и добавляем
         # его в опн
-        while stack and stack[-1]!='(' and oper[i][0]<=oper[stack[-1]][0]:
-            outpt.append(stack.pop())
+        while stack and stack[-1]!='(' and operations[element][0]<=operations[stack[-1]][0]:
+            out_put.append(stack.pop())
         #после завершения цикла добавляем текущий в стек
-        stack.append(i)
-    elif i==')':
+        stack.append(element)
+    elif element==')':
         #удаляем из стека последний элемент пока не наткнемся на отк-ю скобку, удаленные эл-ты добав в опн
         while stack:
             dg=stack.pop()
             if dg=='(':
                 break
-            outpt.append(dg)
-    elif i=='(':
+            out_put.append(dg)
+    elif element=='(':
         stack.append('(')
     else: #добавляем в опн тк это число 
-        outpt.append(i)
+        out_put.append(element)
+
+
 while stack: #проверяем что все элементы из стека теперь в опн, если нет то добавляем 
-    outpt.append(stack.pop())
+    out_put.append(stack.pop())
 
 
-pol=[]
-for i in outpt: #outpt это получившеяся опн только в массиве 
-    if i in oper:
-        y,x=pol.pop(),pol.pop()
-        pol.append(oper[i][1](x,y))
+reverse_Polish_notation=[]
+for element in out_put: #outpt это получившеяся опн только в массиве
+    if element in operations:
+        y= reverse_Polish_notation.pop()
+        x= reverse_Polish_notation.pop()
+        reverse_Polish_notation.append(operations[element][1](x, y))
     else:
-        pol.append(int(i))
-print(pol[0])
+        reverse_Polish_notation.append(int(element))
+print(reverse_Polish_notation[0])
 
 
 
